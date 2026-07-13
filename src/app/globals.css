@@ -10,7 +10,7 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 244.5 57.9% 50.6%; /* #4338CA */
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -22,8 +22,26 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
+    --ring: 244.5 57.9% 50.6%; /* Match primary */
+    --radius: 0.625rem; /* 10px */
+
+    /* CRM Custom Properties */
+    --crm-bg: #F7F8FA;
+    --crm-surface: #FFFFFF;
+    --crm-border: #E4E7EC;
+    --crm-text-primary: #131620;
+    --crm-text-secondary: #667085;
+    --crm-accent: #4338CA;
+    --crm-accent-hover: #3730A3;
+    --crm-accent-tint: #EEF2FF;
+
+    /* Status Colors */
+    --status-new: #64748B;
+    --status-contacted: #2563EB;
+    --status-follow-up: #D97706;
+    --status-interested: #0D9488;
+    --status-converted: #16A34A;
+    --status-not-interested: #DC2626;
   }
 
   .dark {

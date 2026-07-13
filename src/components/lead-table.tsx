@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { LeadStatusBadge } from "@/components/lead-status-badge";
+import { LeadStatusBadge, statusColorMap } from "@/components/lead-status-badge";
 import { LeadDetailSheet } from "@/components/lead-detail-sheet";
 import { formatPhoneForDisplay } from "@/lib/utils";
 
@@ -35,19 +35,19 @@ export function LeadTable({ leads, isAdmin, currentUserId }: { leads: LeadRow[];
 
   return (
     <>
-      <div className="rounded-md border">
+      <div className="rounded-xl border border-[var(--crm-border)] bg-[var(--crm-surface)] shadow-sm overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Business</TableHead>
-              <TableHead>Contact</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>City</TableHead>
-              <TableHead>State</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Assigned</TableHead>
-              <TableHead>Last Activity</TableHead>
+            <TableRow className="border-b-[var(--crm-border)] hover:bg-transparent">
+              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Business</TableHead>
+              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Contact</TableHead>
+              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Phone</TableHead>
+              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">City</TableHead>
+              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">State</TableHead>
+              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Category</TableHead>
+              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Status</TableHead>
+              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Assigned</TableHead>
+              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Last Activity</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -57,16 +57,26 @@ export function LeadTable({ leads, isAdmin, currentUserId }: { leads: LeadRow[];
               </TableRow>
             )}
             {leads.map((lead) => (
-              <TableRow key={lead.id} className="cursor-pointer" onClick={() => setSelectedLeadId(lead.id)}>
-                <TableCell className="font-medium">{lead.businessName}</TableCell>
-                <TableCell>{lead.contactPerson || "—"}</TableCell>
-                <TableCell>{formatPhoneForDisplay(lead.phone)}</TableCell>
-                <TableCell>{lead.city}</TableCell>
-                <TableCell>{lead.state}</TableCell>
-                <TableCell>{lead.category}</TableCell>
+              <TableRow 
+                key={lead.id} 
+                className="cursor-pointer border-b-[var(--crm-border)] hover:bg-slate-50/50 transition-colors relative" 
+                onClick={() => setSelectedLeadId(lead.id)}
+              >
+                <TableCell className="font-medium text-[var(--crm-text-primary)] relative">
+                  <div 
+                    className="absolute left-0 top-0 bottom-0 w-[3px]" 
+                    style={{ backgroundColor: statusColorMap[lead.status] }}
+                  />
+                  <span className="pl-2">{lead.businessName}</span>
+                </TableCell>
+                <TableCell className="text-[var(--crm-text-primary)]">{lead.contactPerson || "—"}</TableCell>
+                <TableCell className="tabular-nums text-[var(--crm-text-primary)]">{formatPhoneForDisplay(lead.phone)}</TableCell>
+                <TableCell className="text-[var(--crm-text-secondary)]">{lead.city}</TableCell>
+                <TableCell className="text-[var(--crm-text-secondary)]">{lead.state}</TableCell>
+                <TableCell className="text-[var(--crm-text-secondary)]">{lead.category}</TableCell>
                 <TableCell><LeadStatusBadge status={lead.status} /></TableCell>
-                <TableCell>{lead.assignedTo ? lead.assignedTo.name : <span className="text-xs text-muted-foreground">Unassigned</span>}</TableCell>
-                <TableCell className="text-xs text-muted-foreground" suppressHydrationWarning>
+                <TableCell>{lead.assignedTo ? <span className="text-[var(--crm-text-primary)]">{lead.assignedTo.name}</span> : <span className="text-xs text-muted-foreground uppercase tracking-wider">Unassigned</span>}</TableCell>
+                <TableCell className="text-xs text-[var(--crm-text-secondary)] tabular-nums" suppressHydrationWarning>
                   {lead.followUps.length > 0 ? new Date(lead.followUps[0].createdAt).toLocaleDateString() : new Date(lead.updatedAt).toLocaleDateString()}
                 </TableCell>
               </TableRow>

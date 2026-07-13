@@ -97,7 +97,7 @@ export default function ImportLeadsClient() {
           </TabsList>
           
           <TabsContent value="paste">
-            <Card>
+            <Card className="shadow-sm border-[var(--crm-border)] rounded-xl bg-[var(--crm-surface)]">
               <CardHeader>
                 <CardTitle>Paste Raw Data</CardTitle>
                 <CardDescription>
@@ -116,6 +116,7 @@ export default function ImportLeadsClient() {
                 <Button 
                   onClick={() => handleParse("paste")} 
                   disabled={isLoading || !pasteText.trim()}
+                  className="bg-[var(--crm-accent)] hover:bg-[var(--crm-accent-hover)] text-white shadow-sm"
                 >
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Extract Leads
@@ -125,7 +126,7 @@ export default function ImportLeadsClient() {
           </TabsContent>
 
           <TabsContent value="excel">
-            <Card>
+            <Card className="shadow-sm border-[var(--crm-border)] rounded-xl bg-[var(--crm-surface)]">
               <CardHeader>
                 <CardTitle>Upload Excel</CardTitle>
                 <CardDescription>
@@ -147,6 +148,7 @@ export default function ImportLeadsClient() {
                 <Button 
                   onClick={() => handleParse("excel")} 
                   disabled={isLoading || !file}
+                  className="bg-[var(--crm-accent)] hover:bg-[var(--crm-accent-hover)] text-white shadow-sm"
                 >
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Extract Leads
@@ -156,7 +158,7 @@ export default function ImportLeadsClient() {
           </TabsContent>
 
           <TabsContent value="word">
-            <Card>
+            <Card className="shadow-sm border-[var(--crm-border)] rounded-xl bg-[var(--crm-surface)]">
               <CardHeader>
                 <CardTitle>Upload Word Document</CardTitle>
                 <CardDescription>
@@ -178,6 +180,7 @@ export default function ImportLeadsClient() {
                 <Button 
                   onClick={() => handleParse("word")} 
                   disabled={isLoading || !file}
+                  className="bg-[var(--crm-accent)] hover:bg-[var(--crm-accent-hover)] text-white shadow-sm"
                 >
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Extract Leads
@@ -187,7 +190,7 @@ export default function ImportLeadsClient() {
           </TabsContent>
         </Tabs>
       ) : (
-        <Card>
+        <Card className="shadow-sm border-[var(--crm-border)] rounded-xl bg-[var(--crm-surface)]">
           <CardHeader>
             <CardTitle>Review Extracted Leads</CardTitle>
             <CardDescription>
@@ -197,32 +200,32 @@ export default function ImportLeadsClient() {
           <CardContent className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Business Name</TableHead>
-                  <TableHead>Contact Person</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Category</TableHead>
+                <TableRow className="border-b-[var(--crm-border)] hover:bg-transparent">
+                  <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium">Business Name</TableHead>
+                  <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium">Contact Person</TableHead>
+                  <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium">Phone</TableHead>
+                  <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium">Location</TableHead>
+                  <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium">Category</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {parsedLeads.map((lead, idx) => (
-                  <TableRow key={idx}>
-                    <TableCell className="font-medium">{lead.businessName}</TableCell>
-                    <TableCell>{lead.contactPerson || "-"}</TableCell>
-                    <TableCell>{lead.phone}</TableCell>
-                    <TableCell>{lead.city}, {lead.state}</TableCell>
-                    <TableCell>{lead.category}</TableCell>
+                  <TableRow key={idx} className="border-b-[var(--crm-border)] hover:bg-slate-50/50">
+                    <TableCell className="font-medium text-[var(--crm-text-primary)]">{lead.businessName}</TableCell>
+                    <TableCell className="text-[var(--crm-text-primary)]">{lead.contactPerson || "-"}</TableCell>
+                    <TableCell className="tabular-nums text-[var(--crm-text-primary)]">{lead.phone}</TableCell>
+                    <TableCell className="text-[var(--crm-text-secondary)]">{lead.city}, {lead.state}</TableCell>
+                    <TableCell className="text-[var(--crm-text-secondary)]">{lead.category}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Button variant="outline" onClick={() => setParsedLeads([])}>
+            <Button variant="outline" onClick={() => setParsedLeads([])} className="border-[var(--crm-border)] text-[var(--crm-text-primary)] hover:bg-slate-50 shadow-sm">
               Cancel & Start Over
             </Button>
-            <Button onClick={handleSave} disabled={isLoading}>
+            <Button onClick={handleSave} disabled={isLoading} className="bg-[var(--crm-accent)] hover:bg-[var(--crm-accent-hover)] text-white shadow-sm">
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Confirm & Save {parsedLeads.length} Leads
             </Button>

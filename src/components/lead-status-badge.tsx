@@ -1,21 +1,33 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { LeadStatus } from "@prisma/client";
 
-const statusColors: Record<LeadStatus, string> = {
-  NEW: "bg-gray-100 text-gray-800 hover:bg-gray-100",
-  CONTACTED: "bg-blue-100 text-blue-800 hover:bg-blue-100",
-  FOLLOW_UP: "bg-amber-100 text-amber-800 hover:bg-amber-100",
-  INTERESTED: "bg-teal-100 text-teal-800 hover:bg-teal-100",
-  CONVERTED: "bg-green-100 text-green-800 hover:bg-green-100",
-  NOT_INTERESTED: "bg-red-100 text-red-800 hover:bg-red-100",
+export const statusColorMap: Record<LeadStatus, string> = {
+  NEW: "var(--status-new)",
+  CONTACTED: "var(--status-contacted)",
+  FOLLOW_UP: "var(--status-follow-up)",
+  INTERESTED: "var(--status-interested)",
+  CONVERTED: "var(--status-converted)",
+  NOT_INTERESTED: "var(--status-not-interested)",
+};
+
+export const statusLabelMap: Record<LeadStatus, string> = {
+  NEW: "New",
+  CONTACTED: "Contacted",
+  FOLLOW_UP: "Follow Up",
+  INTERESTED: "Interested",
+  CONVERTED: "Converted",
+  NOT_INTERESTED: "Not Interested",
 };
 
 export function LeadStatusBadge({ status }: { status: LeadStatus }) {
   return (
-    <Badge className={statusColors[status]} variant="outline">
-      {status.replace("_", " ")}
-    </Badge>
+    <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-[var(--crm-border)] bg-[var(--crm-surface)] text-xs font-medium text-[var(--crm-text-primary)] shadow-sm whitespace-nowrap">
+      <div 
+        className="h-1.5 w-1.5 rounded-full" 
+        style={{ backgroundColor: statusColorMap[status] }}
+      />
+      {statusLabelMap[status]}
+    </div>
   );
 }

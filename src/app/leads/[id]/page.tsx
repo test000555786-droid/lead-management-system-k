@@ -10,6 +10,8 @@ import { formatPhoneForDisplay, getWhatsAppLink } from "@/lib/utils";
 import Link from "next/link";
 import { Phone, MessageCircle, ExternalLink } from "lucide-react";
 
+import { Sidebar } from "@/components/sidebar";
+
 export default async function LeadDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await auth();
@@ -37,21 +39,15 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
   ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link href="/leads"><Button variant="ghost" size="sm">← Leads</Button></Link>
-            <h1 className="text-xl font-bold">Lead Detail</h1>
+    <div className="flex min-h-screen bg-[var(--crm-bg)]">
+      <Sidebar user={{ name: session.user.name || "", role: session.user.role || "" }} />
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="border-b border-[var(--crm-border)] bg-[var(--crm-surface)] px-6 py-4 flex items-center md:min-h-[73px]">
+          <div className="flex items-center gap-4 ml-12 md:ml-0">
+            <Link href="/leads"><Button variant="ghost" size="sm" className="text-[var(--crm-text-secondary)]">← Leads</Button></Link>
+            <h1 className="text-xl font-bold text-[var(--crm-text-primary)]">Lead Detail</h1>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">{session.user.name} ({session.user.role})</span>
-            <form action={handleSignOut}>
-              <Button type="submit" variant="outline" size="sm">Sign out</Button>
-            </form>
-          </div>
-        </div>
-      </header>
+        </header>
 
       <main className="p-6 max-w-4xl mx-auto space-y-6">
         <div className="flex items-center gap-3 flex-wrap">
@@ -154,6 +150,7 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
           {lead.importBatch && <p>Imported from {lead.importBatch.source}{lead.importBatch.fileName ? ` (${lead.importBatch.fileName})` : ""}</p>}
         </div>
       </main>
+      </div>
     </div>
   );
 }

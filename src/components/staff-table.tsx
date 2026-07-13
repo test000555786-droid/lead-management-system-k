@@ -27,16 +27,16 @@ export function StaffTable({ staff, currentUserId }: { staff: StaffMember[]; cur
   }
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-xl border border-[var(--crm-border)] bg-[var(--crm-surface)] shadow-sm overflow-hidden">
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>Leads Assigned</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Active</TableHead>
+          <TableRow className="border-b-[var(--crm-border)] hover:bg-transparent">
+            <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Name</TableHead>
+            <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Email</TableHead>
+            <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Role</TableHead>
+            <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Leads Assigned</TableHead>
+            <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Status</TableHead>
+            <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Active</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -46,12 +46,27 @@ export function StaffTable({ staff, currentUserId }: { staff: StaffMember[]; cur
             </TableRow>
           )}
           {staff.map((member) => (
-            <TableRow key={member.id}>
-              <TableCell className="font-medium">{member.name}</TableCell>
-              <TableCell>{member.email}</TableCell>
-              <TableCell><Badge variant={member.role === "ADMIN" ? "default" : "secondary"}>{member.role}</Badge></TableCell>
-              <TableCell>{member._count.leadsAssigned}</TableCell>
-              <TableCell><Badge variant={member.active ? "default" : "destructive"}>{member.active ? "Active" : "Inactive"}</Badge></TableCell>
+            <TableRow key={member.id} className="border-b-[var(--crm-border)] hover:bg-slate-50/50 transition-colors">
+              <TableCell>
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-full bg-slate-100 flex items-center justify-center font-medium text-slate-700 text-xs">
+                    {member.name.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="font-medium text-[var(--crm-text-primary)]">{member.name}</span>
+                </div>
+              </TableCell>
+              <TableCell className="text-[var(--crm-text-secondary)]">{member.email}</TableCell>
+              <TableCell>
+                <div className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium tracking-wide uppercase ${member.role === "ADMIN" ? "bg-purple-100 text-purple-700" : "bg-slate-100 text-slate-700"}`}>
+                  {member.role}
+                </div>
+              </TableCell>
+              <TableCell className="tabular-nums font-medium text-[var(--crm-text-primary)]">{member._count.leadsAssigned}</TableCell>
+              <TableCell>
+                <div className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium tracking-wide uppercase ${member.active ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}>
+                  {member.active ? "Active" : "Inactive"}
+                </div>
+              </TableCell>
               <TableCell>
                 <Switch checked={member.active} disabled={member.id === currentUserId || isPending} onCheckedChange={() => handleToggle(member.id, member.active)} />
               </TableCell>
