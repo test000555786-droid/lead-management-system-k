@@ -23,7 +23,7 @@ export default async function StaffDetailPage({ params }: { params: Promise<{ id
     <div className="flex min-h-screen bg-[var(--crm-bg)]">
       <Sidebar user={{ name: session.user.name || "", role: session.user.role || "" }} />
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="border-b border-[var(--crm-border)] bg-[var(--crm-surface)] px-6 py-4 flex items-center md:min-h-[73px]">
+        <header className="sticky top-0 z-40 border-b border-[var(--crm-border)] bg-[var(--crm-surface)] px-6 py-4 flex items-center md:min-h-[73px]">
           <Link href="/admin/staff" className="mr-4 text-muted-foreground hover:text-[var(--crm-accent)] transition-colors">
             <ChevronLeft className="h-5 w-5" />
           </Link>
