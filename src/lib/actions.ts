@@ -11,6 +11,7 @@ export async function handleSignOut() {
 }
 import { Role, LeadStatus, Prisma } from "@prisma/client";
 import { normalizePhone, normalizeLocation } from "@/lib/utils";
+import { getGranularCategories, getUniqueBroadCategories } from "@/lib/category-mapping";
 
 // ─── STAFF MANAGEMENT ──────────────────────────
 
@@ -215,7 +216,12 @@ export async function getLeads(params: {
     andConditions.push({ country: { contains: params.country, mode: "insensitive" } });
   }
   if (params.category) {
-    andConditions.push({ category: { contains: params.category, mode: "insensitive" } });
+    const granulars = getGranularCategories(params.category);
+    if (granulars.length > 0) {
+      andConditions.push({ category: { in: granulars } });
+    } else {
+      andConditions.push({ category: { contains: params.category, mode: "insensitive" } });
+    }
   }
   if (params.status) {
     andConditions.push({ status: params.status as LeadStatus });
@@ -314,7 +320,7 @@ export async function getFilterOptions() {
     cities: cities.map((c) => c.city),
     states: states.map((s) => s.state),
     countries: countries.map((c) => c.country),
-    categories: categories.map((c) => c.category),
+    categories: getUniqueBroadCategories(categories.map((c) => c.category)),
   };
 }
 
