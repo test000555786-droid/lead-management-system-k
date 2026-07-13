@@ -94,7 +94,7 @@ export function Sidebar({ user }: { user: { name: string; role: string } }) {
 
       {/* Sidebar container */}
       <div className={cn(
-        "fixed inset-y-0 left-0 z-50 transition-transform duration-300 md:relative md:translate-x-0 h-screen",
+        "fixed inset-y-0 left-0 z-50 transition-transform duration-300 md:sticky md:top-0 md:translate-x-0 h-screen overflow-y-auto",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         {sidebarContent}
