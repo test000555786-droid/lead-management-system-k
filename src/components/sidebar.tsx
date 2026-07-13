@@ -78,9 +78,9 @@ export function Sidebar({ user }: { user: { name: string; role: string } }) {
   return (
     <>
       {/* Mobile toggle */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
-        <Button variant="outline" size="icon" onClick={() => setIsOpen(true)} className="bg-background">
-          <Menu className="h-5 w-5" />
+      <div className="md:hidden fixed top-2.5 left-4 z-50">
+        <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)} className="text-[var(--crm-text-secondary)]">
+          <Menu className="h-6 w-6" />
         </Button>
       </div>
 
