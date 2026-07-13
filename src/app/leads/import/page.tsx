@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Link from "next/link";
 import ImportLeadsClient from "@/components/leads/ImportLeadsClient";
 import { Button } from "@/components/ui/button";
+import { handleSignOut } from "@/lib/actions";
 
 export default async function ImportPage() {
   const session = await auth();
@@ -20,7 +21,7 @@ export default async function ImportPage() {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">{session.user.name} ({session.user.role})</span>
-            <form action="/api/auth/signout" method="POST">
+            <form action={handleSignOut}>
               <Button type="submit" variant="outline" size="sm">Sign out</Button>
             </form>
           </div>

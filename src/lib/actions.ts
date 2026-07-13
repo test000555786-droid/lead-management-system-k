@@ -4,7 +4,11 @@ import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
+import { auth, signOut } from "@/lib/auth";
+
+export async function handleSignOut() {
+  await signOut();
+}
 import { Role, LeadStatus, Prisma } from "@prisma/client";
 import { normalizePhone, normalizeLocation } from "@/lib/utils";
 

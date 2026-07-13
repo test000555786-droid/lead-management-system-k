@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getLeads, getFilterOptions, getActiveStaff } from "@/lib/actions";
+import { getLeads, getFilterOptions, getActiveStaff, handleSignOut } from "@/lib/actions";
 import { LeadFilters } from "@/components/lead-filters";
 import { LeadTable } from "@/components/lead-table";
 import { AddLeadDialog } from "@/components/add-lead-dialog";
@@ -44,7 +44,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">{session.user.name} ({session.user.role})</span>
-            <form action="/api/auth/signout" method="POST">
+            <form action={handleSignOut}>
               <Button type="submit" variant="outline" size="sm">Sign out</Button>
             </form>
           </div>

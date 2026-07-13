@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getDashboardStats, getFunnelData, getFollowUpsDueToday, getStaffLeaderboard } from "@/lib/actions";
+import { getDashboardStats, getFunnelData, getFollowUpsDueToday, getStaffLeaderboard, handleSignOut } from "@/lib/actions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -23,7 +23,7 @@ export default async function DashboardPage() {
           <h1 className="text-xl font-bold">Lead Management CRM</h1>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">{session.user.name} ({session.user.role})</span>
-            <form action="/api/auth/signout" method="POST">
+            <form action={handleSignOut}>
               <Button type="submit" variant="outline" size="sm">Sign out</Button>
             </form>
           </div>

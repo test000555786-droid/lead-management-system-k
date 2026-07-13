@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getStaffList } from "@/lib/actions";
+import { getStaffList, handleSignOut } from "@/lib/actions";
 import { StaffTable } from "@/components/staff-table";
 import { AddStaffDialog } from "@/components/add-staff-dialog";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,7 +24,7 @@ export default async function StaffPage() {
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">{session.user.name} ({session.user.role})</span>
-            <form action="/api/auth/signout" method="POST">
+            <form action={handleSignOut}>
               <Button type="submit" variant="outline" size="sm">Sign out</Button>
             </form>
           </div>

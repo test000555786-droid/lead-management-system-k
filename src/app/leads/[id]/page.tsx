@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
-import { getLeadById, assignLeadFormAction, claimLeadFormAction, getActiveStaff } from "@/lib/actions";
+import { getLeadById, assignLeadFormAction, claimLeadFormAction, getActiveStaff, handleSignOut } from "@/lib/actions";
 import { LeadStatusBadge } from "@/components/lead-status-badge";
 import { StatusChangeForm } from "@/components/status-change-form";
 import { Timeline } from "@/components/timeline";
@@ -46,7 +46,7 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-muted-foreground">{session.user.name} ({session.user.role})</span>
-            <form action="/api/auth/signout" method="POST">
+            <form action={handleSignOut}>
               <Button type="submit" variant="outline" size="sm">Sign out</Button>
             </form>
           </div>
