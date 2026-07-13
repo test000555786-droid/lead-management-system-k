@@ -136,7 +136,7 @@ export async function createLead(data: z.infer<typeof createLeadSchema>) {
 
   const normalizedPhone = normalizePhone(parsed.data.phone);
 
-  const existing = await prisma.lead.findUnique({
+  const existing = await prisma.lead.findFirst({
     where: { phoneNormalized: normalizedPhone },
   });
   if (existing) {
@@ -610,15 +610,15 @@ export async function getFollowUpsDueToday() {
 
 // ─── FORM ACTION WRAPPERS ──────────────────────
 
-export async function assignLeadFormAction(formData: FormData) {
+export async function assignLeadFormAction(formData: FormData): Promise<void> {
   const leadId = formData.get("leadId") as string;
   const assignedToId = formData.get("assignedToId") as string;
-  return assignLead(leadId, assignedToId === "unassigned" ? null : assignedToId);
+  await assignLead(leadId, assignedToId === "unassigned" ? null : assignedToId);
 }
 
-export async function claimLeadFormAction(formData: FormData) {
+export async function claimLeadFormAction(formData: FormData): Promise<void> {
   const leadId = formData.get("leadId") as string;
   const session = await auth();
   if (!session) throw new Error("Unauthorized");
-  return assignLead(leadId, session.user.id);
+  await assignLead(leadId, session.user.id);
 }

@@ -66,7 +66,7 @@ export function LeadTable({ leads, isAdmin, currentUserId }: { leads: LeadRow[];
                 <TableCell>{lead.category}</TableCell>
                 <TableCell><LeadStatusBadge status={lead.status} /></TableCell>
                 <TableCell>{lead.assignedTo ? lead.assignedTo.name : <span className="text-xs text-muted-foreground">Unassigned</span>}</TableCell>
-                <TableCell className="text-xs text-muted-foreground">
+                <TableCell className="text-xs text-muted-foreground" suppressHydrationWarning>
                   {lead.followUps.length > 0 ? new Date(lead.followUps[0].createdAt).toLocaleDateString() : new Date(lead.updatedAt).toLocaleDateString()}
                 </TableCell>
               </TableRow>

@@ -7,22 +7,23 @@ import { AddLeadDialog } from "@/components/add-lead-dialog";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export default async function LeadsPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+export default async function LeadsPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const resolvedSearchParams = await searchParams;
   const session = await auth();
   if (!session) redirect("/login");
 
   const isAdmin = session.user.role === "ADMIN";
 
   const params = {
-    city: typeof searchParams.city === "string" ? searchParams.city : undefined,
-    state: typeof searchParams.state === "string" ? searchParams.state : undefined,
-    country: typeof searchParams.country === "string" ? searchParams.country : undefined,
-    category: typeof searchParams.category === "string" ? searchParams.category : undefined,
-    status: typeof searchParams.status === "string" ? searchParams.status : undefined,
-    assignedTo: typeof searchParams.assignedTo === "string" ? searchParams.assignedTo : undefined,
-    search: typeof searchParams.search === "string" ? searchParams.search : undefined,
-    from: typeof searchParams.from === "string" ? searchParams.from : undefined,
-    to: typeof searchParams.to === "string" ? searchParams.to : undefined,
+    city: typeof resolvedSearchParams.city === "string" ? resolvedSearchParams.city : undefined,
+    state: typeof resolvedSearchParams.state === "string" ? resolvedSearchParams.state : undefined,
+    country: typeof resolvedSearchParams.country === "string" ? resolvedSearchParams.country : undefined,
+    category: typeof resolvedSearchParams.category === "string" ? resolvedSearchParams.category : undefined,
+    status: typeof resolvedSearchParams.status === "string" ? resolvedSearchParams.status : undefined,
+    assignedTo: typeof resolvedSearchParams.assignedTo === "string" ? resolvedSearchParams.assignedTo : undefined,
+    search: typeof resolvedSearchParams.search === "string" ? resolvedSearchParams.search : undefined,
+    from: typeof resolvedSearchParams.from === "string" ? resolvedSearchParams.from : undefined,
+    to: typeof resolvedSearchParams.to === "string" ? resolvedSearchParams.to : undefined,
   };
 
   if (params.assignedTo === "unassigned") params.assignedTo = "null";

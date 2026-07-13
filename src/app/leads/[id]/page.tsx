@@ -10,14 +10,15 @@ import { formatPhoneForDisplay, getWhatsAppLink } from "@/lib/utils";
 import Link from "next/link";
 import { Phone, MessageCircle, ExternalLink } from "lucide-react";
 
-export default async function LeadDetailPage({ params }: { params: { id: string } }) {
+export default async function LeadDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await auth();
   if (!session) redirect("/login");
 
   const isAdmin = session.user.role === "ADMIN";
 
   let lead;
-  try { lead = await getLeadById(params.id); }
+  try { lead = await getLeadById(id); }
   catch { notFound(); }
 
   const staffList = isAdmin ? await getActiveStaff() : [];
