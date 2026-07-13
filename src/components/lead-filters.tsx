@@ -52,7 +52,7 @@ export function LeadFilters({ options }: { options: FilterOptions }) {
         <Search className="absolute left-3 top-2.5 h-4 w-4 text-[var(--crm-text-secondary)]" />
         <Input
           placeholder="Search business, phone, contact..."
-          className="pl-9 bg-transparent border-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 px-0 h-9"
+          className="pl-9 pr-3 bg-transparent border-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 h-9"
           value={searchParams.get("search") || ""}
           onChange={(e) => setFilter("search", e.target.value)}
         />
