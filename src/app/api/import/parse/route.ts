@@ -1,6 +1,6 @@
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 import * as xlsx from "xlsx";
 import mammoth from "mammoth";
 
@@ -43,22 +43,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No text to parse" }, { status: 400 });
     }
 
-    // Initialize Gemini
-    const apiKey = process.env.GEMINI_API_KEY;
+    // Initialize Groq
+    const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
-      return NextResponse.json({ error: "GEMINI_API_KEY is not set" }, { status: 500 });
+      return NextResponse.json({ error: "GROQ_API_KEY is not set" }, { status: 500 });
     }
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-flash-latest",
-      generationConfig: {
-        responseMimeType: "application/json",
-      },
-    });
+    const groq = new Groq({ apiKey });
 
     const prompt = `
     You are an expert data extraction assistant. I will provide you with raw text that contains business leads (which might be from an email, a pasted list, an Excel CSV dump, or a Word document).
-    Your task is to extract all the leads you can find into a JSON array of objects.
+    Your task is to extract all the leads you can find into a JSON object containing a single key "leads" which maps to an array of objects.
 
     Each object MUST match this exact schema:
     {
@@ -80,11 +74,19 @@ export async function POST(req: Request) {
     """
     `;
 
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
-    const leads = JSON.parse(responseText);
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [{ role: "user", content: prompt }],
+      model: "llama3-70b-8192", // We use 70b for better schema adherence and extraction quality
+      response_format: { type: "json_object" },
+    });
 
-    return NextResponse.json({ leads });
+    const responseText = chatCompletion.choices[0]?.message?.content || "{}";
+    const parsedJson = JSON.parse(responseText);
+    
+    // Ensure we always return an array
+    const leadsArray = parsedJson.leads || parsedJson.data || Object.values(parsedJson)[0] || [];
+
+    return NextResponse.json({ leads: Array.isArray(leadsArray) ? leadsArray : [] });
   } catch (error: any) {
     console.error("Import Parse Error:", error);
     return NextResponse.json({ error: error.message || "Failed to parse import" }, { status: 500 });
