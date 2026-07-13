@@ -76,7 +76,7 @@ export async function POST(req: Request) {
 
     const chatCompletion = await groq.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
-      model: "llama3-70b-8192", // We use 70b for better schema adherence and extraction quality
+      model: "llama-3.3-70b-versatile", // We use a newer Llama model for better schema adherence
       response_format: { type: "json_object" },
     });
 
