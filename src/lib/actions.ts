@@ -438,6 +438,37 @@ export async function assignLead(leadId: string, assignedToId: string | null) {
   return { success: true };
 }
 
+export async function bulkAssignLeads(leadIds: string[], assignedToId: string | null) {
+  const session = await auth();
+  if (!session) throw new Error("Unauthorized");
+  if (session.user.role !== "ADMIN") throw new Error("Only admins can bulk assign leads");
+
+  if (!leadIds || leadIds.length === 0) return { success: true, count: 0 };
+
+  await prisma.$transaction(async (tx) => {
+    // 1. Update the leads
+    const result = await tx.lead.updateMany({
+      where: { id: { in: leadIds } },
+      data: { assignedToId },
+    });
+
+    // 2. Log activity for each updated lead
+    const logs = leadIds.map((id) => ({
+      leadId: id,
+      userId: session.user.id,
+      action: "assigned",
+      detail: assignedToId ? "Assigned to staff member via bulk action" : "Unassigned via bulk action",
+    }));
+
+    await tx.activityLog.createMany({
+      data: logs,
+    });
+  });
+
+  revalidatePath("/leads");
+  return { success: true, count: leadIds.length };
+}
+
 export async function addFollowUp(leadId: string, notes: string, nextFollowUpAt?: string) {
   const session = await auth();
   if (!session) throw new Error("Unauthorized");

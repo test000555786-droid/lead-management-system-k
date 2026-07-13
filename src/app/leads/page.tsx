@@ -62,7 +62,12 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
           isAdmin,
         }} />
 
-        <LeadTable leads={leads} isAdmin={isAdmin} currentUserId={session.user.id} />
+        <LeadTable 
+          leads={leads} 
+          isAdmin={isAdmin} 
+          currentUserId={session.user.id} 
+          staffList={staffList.map(s => ({ id: s.id, name: s.name }))}
+        />
       </main>
       </div>
     </div>
