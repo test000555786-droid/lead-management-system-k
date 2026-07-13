@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  passwordHash  String
+  role          Role     @default(STAFF)
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  leadsAssigned Lead[]        @relation("AssignedLeads")
+  leadsCreated  Lead[]        @relation("CreatedLeads")
+  followUps     FollowUp[]
+  activityLogs  ActivityLog[]
+  importBatches ImportBatch[]
+}
+
+enum Role {
+  ADMIN
+  STAFF
+}
+
+model Lead {
+  id              String       @id @default(cuid())
+  businessName    String
+  contactPerson   String?
+  phone           String
+  phoneNormalized String       // digits only, for dedup matching
+  altPhone        String?
+  email           String?
+  website         String?
+  address         String?
+
+  city            String
+  state           String
+  country         String       @default("India")
+
+  category        String       // business category, free-select from taxonomy
+  source          String?      // "Google Maps scrape", "Referral", "Cold list", etc.
+
+  status          LeadStatus   @default(NEW)
+  tags            String[]     @default([])
+  notes           String?
+
+  assignedToId    String?
+  assignedTo      User?        @relation("AssignedLeads", fields: [assignedToId], references: [id])
+  createdById     String
+  createdBy       User         @relation("CreatedLeads", fields: [createdById], references: [id])
+
+  importBatchId   String?
+  importBatch     ImportBatch? @relation(fields: [importBatchId], references: [id])
+
+  followUps       FollowUp[]
+  denyReason      DenyReason?
+  activityLogs    ActivityLog[]
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([city, state, country])
+  @@index([category])
+  @@index([status])
+  @@index([phoneNormalized])
+  @@index([assignedToId])
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  FOLLOW_UP
+  INTERESTED
+  CONVERTED
+  NOT_INTERESTED
+}
+
+model FollowUp {
+  id             String    @id @default(cuid())
+  leadId         String
+  lead           Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  staffId        String
+  staff          User      @relation(fields: [staffId], references: [id])
+  notes          String
+  outcome        String?   // "No answer", "Asked to call back", "Interested", etc.
+  nextFollowUpAt DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@index([leadId])
+  @@index([nextFollowUpAt])
+}
+
+model DenyReason {
+  id        String   @id @default(cuid())
+  leadId    String   @unique
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  category  String   // "Price", "Competitor", "Wrong number", "Closed business", "No response"
+  details   String?
+  createdAt DateTime @default(now())
+}
+
+model ImportBatch {
+  id          String   @id @default(cuid())
+  source      String   // "excel", "word", "paste"
+  fileName    String?
+  importedById String
+  importedBy  User     @relation(fields: [importedById], references: [id])
+  rowCount    Int
+  createdAt   DateTime @default(now())
+
+  leads       Lead[]
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String   // "status_changed", "assigned", "note_added"
+  detail    String?
+  createdAt DateTime @default(now())
+
+  @@index([leadId])
+}
