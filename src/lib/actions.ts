@@ -643,6 +643,58 @@ export async function getFollowUpsDueToday() {
   return followUps;
 }
 
+export async function getStaffDashboard(staffId: string) {
+  const session = await auth();
+  if (!session || session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized");
+  }
+
+  const staff = await prisma.user.findUnique({
+    where: { id: staffId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      active: true,
+      createdAt: true,
+    }
+  });
+
+  if (!staff) throw new Error("Staff member not found");
+
+  const assignedLeads = await prisma.lead.findMany({
+    where: { assignedToId: staffId },
+    select: {
+      id: true,
+      businessName: true,
+      contactPerson: true,
+      phone: true,
+      city: true,
+      category: true,
+      status: true,
+      updatedAt: true,
+    },
+    orderBy: { updatedAt: "desc" }
+  });
+
+  const recentActivity = await prisma.activityLog.findMany({
+    where: { userId: staffId },
+    include: {
+      lead: {
+        select: {
+          id: true,
+          businessName: true,
+        }
+      }
+    },
+    orderBy: { createdAt: "desc" },
+    take: 50
+  });
+
+  return { staff, assignedLeads, recentActivity };
+}
+
 // ─── FORM ACTION WRAPPERS ──────────────────────
 
 export async function assignLeadFormAction(formData: FormData): Promise<void> {

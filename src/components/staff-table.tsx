@@ -1,8 +1,10 @@
 "use client";
 
 import { useTransition } from "react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toggleStaffActive } from "@/lib/actions";
 
@@ -37,12 +39,13 @@ export function StaffTable({ staff, currentUserId }: { staff: StaffMember[]; cur
             <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Leads Assigned</TableHead>
             <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Status</TableHead>
             <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Active</TableHead>
+            <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10 text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {staff.length === 0 && (
             <TableRow>
-              <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">No staff members yet</TableCell>
+              <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">No staff members yet</TableCell>
             </TableRow>
           )}
           {staff.map((member) => (
@@ -69,6 +72,11 @@ export function StaffTable({ staff, currentUserId }: { staff: StaffMember[]; cur
               </TableCell>
               <TableCell>
                 <Switch checked={member.active} disabled={member.id === currentUserId || isPending} onCheckedChange={() => handleToggle(member.id, member.active)} />
+              </TableCell>
+              <TableCell className="text-right">
+                <Button variant="ghost" size="sm" asChild className="text-[var(--crm-accent)] hover:text-[var(--crm-accent-hover)] hover:bg-[var(--crm-accent-tint)]">
+                  <Link href={`/admin/staff/${member.id}`}>View</Link>
+                </Button>
               </TableCell>
             </TableRow>
           ))}
