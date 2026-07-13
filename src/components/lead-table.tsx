@@ -123,6 +123,7 @@ export function LeadTable({ leads, isAdmin, currentUserId, staffList = [] }: { l
                   />
                 </TableHead>
               )}
+              <TableHead className="w-8 text-center uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10 px-0 pl-2">#</TableHead>
               <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10 pl-2">Business</TableHead>
               <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Contact</TableHead>
               <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Phone</TableHead>
@@ -140,7 +141,7 @@ export function LeadTable({ leads, isAdmin, currentUserId, staffList = [] }: { l
                 <TableCell colSpan={isAdmin ? 10 : 9} className="h-24 text-center text-muted-foreground">No leads found</TableCell>
               </TableRow>
             )}
-            {leads.map((lead) => (
+            {leads.map((lead, index) => (
               <TableRow 
                 key={lead.id} 
                 className={`cursor-pointer border-b-[var(--crm-border)] hover:bg-slate-50/50 transition-colors relative ${selectedLeads.has(lead.id) ? "bg-[var(--crm-accent-tint)]/50" : ""}`}
@@ -159,13 +160,16 @@ export function LeadTable({ leads, isAdmin, currentUserId, staffList = [] }: { l
                     />
                   </TableCell>
                 )}
-                <TableCell className="font-medium text-[var(--crm-text-primary)] relative pl-2">
+                <TableCell className="w-8 text-center text-xs font-medium text-[var(--crm-text-secondary)] tabular-nums px-0 pl-2 relative">
                   {!isAdmin && (
                     <div 
                       className="absolute left-0 top-0 bottom-0 w-[3px]" 
                       style={{ backgroundColor: statusColorMap[lead.status] }}
                     />
                   )}
+                  {index + 1}
+                </TableCell>
+                <TableCell className="font-medium text-[var(--crm-text-primary)] relative pl-2">
                   <span className={isAdmin ? "" : "pl-2"}>{lead.businessName}</span>
                 </TableCell>
                 <TableCell className="text-[var(--crm-text-primary)]">{lead.contactPerson || "—"}</TableCell>
