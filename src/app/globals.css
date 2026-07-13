@@ -10,7 +10,7 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 244.5 57.9% 50.6%; /* #4338CA */
+    --primary: 222.2 47.4% 11.2%; /* Slate-900 */
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -22,7 +22,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 244.5 57.9% 50.6%; /* Match primary */
+    --ring: 222.2 47.4% 11.2%; /* Match primary */
     --radius: 0.625rem; /* 10px */
 
     /* CRM Custom Properties */
@@ -31,9 +31,9 @@
     --crm-border: #E4E7EC;
     --crm-text-primary: #131620;
     --crm-text-secondary: #667085;
-    --crm-accent: #4338CA;
-    --crm-accent-hover: #3730A3;
-    --crm-accent-tint: #EEF2FF;
+    --crm-accent: #0F172A; /* Premium Dark Slate */
+    --crm-accent-hover: #1E293B;
+    --crm-accent-tint: #F1F5F9;
 
     /* Status Colors */
     --status-new: #64748B;

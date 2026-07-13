@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Zap } from "lucide-react";
+import { Hexagon } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -47,7 +47,7 @@ export default function LoginPage() {
         
         <div className="relative z-10 flex items-center gap-3">
           <div className="h-10 w-10 rounded-xl bg-[var(--crm-accent)] flex items-center justify-center text-white shadow-lg shadow-[var(--crm-accent)]/20">
-            <Zap className="h-5 w-5" />
+            <Hexagon className="h-5 w-5 fill-white" />
           </div>
           <span className="text-xl font-bold tracking-tight">Lead CRM</span>
         </div>
@@ -72,7 +72,7 @@ export default function LoginPage() {
           
           <div className="flex flex-col space-y-2 text-center lg:text-left">
             <div className="lg:hidden mx-auto mb-4 h-12 w-12 rounded-xl bg-[var(--crm-accent)] flex items-center justify-center text-white shadow-sm">
-              <Zap className="h-6 w-6" />
+              <Hexagon className="h-6 w-6 fill-white" />
             </div>
             <h2 className="text-3xl font-semibold tracking-tight text-slate-900">Welcome back</h2>
             <p className="text-sm text-slate-500">Enter your credentials to access your account</p>

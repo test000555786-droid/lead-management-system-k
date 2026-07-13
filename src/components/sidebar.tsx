@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, UserCog, Upload, Menu, LogOut, Zap } from "lucide-react";
+import { LayoutDashboard, Users, UserCog, Upload, Menu, LogOut, Hexagon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { handleSignOut } from "@/lib/actions";
 import { useState } from "react";
@@ -25,7 +25,7 @@ export function Sidebar({ user }: { user: { name: string; role: string } }) {
     <div className="flex h-full flex-col bg-[var(--crm-surface)] border-r border-[var(--crm-border)] w-64 text-[var(--crm-text-primary)]">
       <div className="p-6 flex items-center gap-3">
         <div className="h-8 w-8 rounded-md bg-[var(--crm-accent)] flex items-center justify-center text-white shrink-0">
-          <Zap className="h-5 w-5" />
+          <Hexagon className="h-5 w-5 fill-white" />
         </div>
         <span className="font-bold text-lg tracking-tight">Lead CRM</span>
       </div>
