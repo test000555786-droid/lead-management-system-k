@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { handleSignOut } from "@/lib/actions";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { SessionTracker } from "@/components/session-tracker";
 
 export function Sidebar({ user }: { user: { name: string; role: string } }) {
   const pathname = usePathname();
@@ -78,6 +79,8 @@ export function Sidebar({ user }: { user: { name: string; role: string } }) {
 
   return (
     <>
+      <SessionTracker />
+
       {/* Mobile toggle */}
       <div className="md:hidden fixed top-2.5 left-4 z-50">
         <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)} className="text-[var(--crm-text-secondary)]">

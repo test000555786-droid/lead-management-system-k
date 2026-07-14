@@ -167,6 +167,18 @@ export default async function DashboardPage() {
                       </div>
                       <div className="flex gap-6 text-sm">
                         <span className="flex flex-col items-center">
+                          <strong className="text-lg tabular-nums">
+                            {(() => {
+                              const seconds = s.activeTimeToday || 0;
+                              if (!seconds) return "0m";
+                              const h = Math.floor(seconds / 3600);
+                              const m = Math.floor((seconds % 3600) / 60);
+                              return h > 0 ? `${h}h ${m}m` : `${m}m`;
+                            })()}
+                          </strong>
+                          <span className="text-[10px] uppercase text-[var(--crm-text-secondary)] tracking-wider">Active</span>
+                        </span>
+                        <span className="flex flex-col items-center">
                           <strong className="text-lg tabular-nums">{s.totalAssigned}</strong> 
                           <span className="text-[10px] uppercase text-[var(--crm-text-secondary)] tracking-wider">Assigned</span>
                         </span>

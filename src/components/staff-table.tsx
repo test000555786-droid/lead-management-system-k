@@ -16,7 +16,16 @@ type StaffMember = {
   active: boolean;
   createdAt: Date;
   _count: { leadsAssigned: number };
+  activeTimeToday?: number;
 };
+
+function formatDuration(seconds?: number) {
+  if (!seconds) return "0m";
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
 
 export function StaffTable({ staff, currentUserId }: { staff: StaffMember[]; currentUserId: string }) {
   const [isPending, startTransition] = useTransition();
@@ -36,6 +45,7 @@ export function StaffTable({ staff, currentUserId }: { staff: StaffMember[]; cur
             <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Name</TableHead>
             <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Email</TableHead>
             <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Role</TableHead>
+            <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Active Today</TableHead>
             <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Leads Assigned</TableHead>
             <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Status</TableHead>
             <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Active</TableHead>
@@ -45,7 +55,7 @@ export function StaffTable({ staff, currentUserId }: { staff: StaffMember[]; cur
         <TableBody>
           {staff.length === 0 && (
             <TableRow>
-              <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">No staff members yet</TableCell>
+              <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">No staff members yet</TableCell>
             </TableRow>
           )}
           {staff.map((member) => (
@@ -63,6 +73,9 @@ export function StaffTable({ staff, currentUserId }: { staff: StaffMember[]; cur
                 <div className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-medium tracking-wide uppercase ${member.role === "ADMIN" ? "bg-purple-100 text-purple-700" : "bg-slate-100 text-slate-700"}`}>
                   {member.role}
                 </div>
+              </TableCell>
+              <TableCell className="tabular-nums text-[var(--crm-text-primary)] font-medium">
+                {formatDuration(member.activeTimeToday)}
               </TableCell>
               <TableCell className="tabular-nums font-medium text-[var(--crm-text-primary)]">{member._count.leadsAssigned}</TableCell>
               <TableCell>

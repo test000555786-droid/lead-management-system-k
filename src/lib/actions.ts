@@ -94,10 +94,19 @@ export async function getStaffList() {
       _count: {
         select: { leadsAssigned: true },
       },
+      staffSessions: {
+        where: {
+          date: { gte: new Date(new Date().setHours(0, 0, 0, 0)) }
+        },
+        select: { duration: true }
+      }
     },
   });
 
-  return staff;
+  return staff.map((s) => ({
+    ...s,
+    activeTimeToday: s.staffSessions.reduce((acc, sess) => acc + sess.duration, 0)
+  }));
 }
 
 export async function getActiveStaff() {
@@ -596,6 +605,12 @@ export async function getStaffLeaderboard() {
         },
         select: { id: true },
       },
+      staffSessions: {
+        where: {
+          date: { gte: new Date(new Date().setHours(0, 0, 0, 0)) }
+        },
+        select: { duration: true }
+      }
     },
   });
 
@@ -607,6 +622,7 @@ export async function getStaffLeaderboard() {
     conversions: s.leadsAssigned.length,
     followUpsLogged: s._count.followUps,
     pendingFollowUps: s.followUps.length,
+    activeTimeToday: s.staffSessions.reduce((acc, sess) => acc + sess.duration, 0),
   }));
 }
 
@@ -711,4 +727,53 @@ export async function claimLeadFormAction(formData: FormData): Promise<void> {
   const session = await auth();
   if (!session) throw new Error("Unauthorized");
   await assignLead(leadId, session.user.id);
+}
+
+// ─── SESSION TRACKING ──────────────────────────
+
+export async function pingSession() {
+  const session = await auth();
+  if (!session) return { success: false };
+
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  await prisma.$transaction(async (tx) => {
+    const existing = await tx.staffSession.findFirst({
+      where: {
+        userId: session.user.id,
+        date: { gte: todayStart },
+      },
+      orderBy: { date: "desc" },
+    });
+
+    if (existing) {
+      // Calculate diff in seconds since last ping
+      const diffSeconds = Math.floor((now.getTime() - existing.lastPingAt.getTime()) / 1000);
+      
+      // If the ping is within a reasonable active timeframe (e.g., < 5 minutes), add to duration.
+      // Otherwise, they might have closed the tab and come back, so we just update lastPingAt without adding the gap.
+      const addDuration = diffSeconds > 0 && diffSeconds <= 300 ? diffSeconds : 0;
+
+      await tx.staffSession.update({
+        where: { id: existing.id },
+        data: {
+          lastPingAt: now,
+          duration: existing.duration + addDuration,
+        },
+      });
+    } else {
+      await tx.staffSession.create({
+        data: {
+          userId: session.user.id,
+          date: todayStart,
+          firstPingAt: now,
+          lastPingAt: now,
+          duration: 0,
+        },
+      });
+    }
+  });
+
+  return { success: true };
 }

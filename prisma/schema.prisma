@@ -21,6 +21,19 @@ model User {
   followUps     FollowUp[]
   activityLogs  ActivityLog[]
   importBatches ImportBatch[]
+  staffSessions StaffSession[]
+}
+
+model StaffSession {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        DateTime @default(now())
+  firstPingAt DateTime @default(now())
+  lastPingAt  DateTime @default(now())
+  duration    Int      @default(0)
+
+  @@unique([userId, date])
 }
 
 enum Role {
