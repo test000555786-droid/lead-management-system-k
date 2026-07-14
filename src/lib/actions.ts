@@ -82,6 +82,21 @@ export async function toggleStaffActive(userId: string, active: boolean) {
   return { success: true };
 }
 
+export async function toggleStaffViewAllLeads(userId: string, canViewAllLeads: boolean) {
+  const session = await auth();
+  if (!session || session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized");
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { canViewAllLeads },
+  });
+
+  revalidatePath("/admin/staff");
+  return { success: true };
+}
+
 export async function getStaffList() {
   const session = await auth();
   if (!session || session.user.role !== "ADMIN") {
@@ -206,7 +221,7 @@ export async function getLeads(params: {
 
   const andConditions: Prisma.LeadWhereInput[] = [];
 
-  if (session.user.role === "STAFF") {
+  if (session.user.role === "STAFF" && !session.user.canViewAllLeads) {
     andConditions.push({ assignedToId: session.user.id });
   }
 
@@ -302,7 +317,7 @@ export async function getLeadById(leadId: string) {
 
   if (!lead) throw new Error("Lead not found");
 
-  if (session.user.role === "STAFF") {
+  if (session.user.role === "STAFF" && !session.user.canViewAllLeads) {
     if (lead.assignedToId !== session.user.id) {
       throw new Error("Unauthorized");
     }
@@ -358,7 +373,7 @@ export async function updateLeadStatus(data: z.infer<typeof statusChangeSchema>)
   });
   if (!lead) throw new Error("Lead not found");
 
-  if (session.user.role === "STAFF" && lead.assignedToId !== session.user.id) {
+  if (session.user.role === "STAFF" && !session.user.canViewAllLeads && lead.assignedToId !== session.user.id) {
     throw new Error("Unauthorized");
   }
 
@@ -420,7 +435,7 @@ export async function assignLead(leadId: string, assignedToId: string | null) {
   });
   if (!lead) throw new Error("Lead not found");
 
-  if (session.user.role === "STAFF") {
+  if (session.user.role === "STAFF" && !session.user.canViewAllLeads) {
     if (lead.assignedToId !== null) {
       throw new Error("This lead is already assigned");
     }
@@ -491,7 +506,7 @@ export async function addFollowUp(leadId: string, notes: string, nextFollowUpAt?
   });
   if (!lead) throw new Error("Lead not found");
 
-  if (session.user.role === "STAFF" && lead.assignedToId !== session.user.id) {
+  if (session.user.role === "STAFF" && !session.user.canViewAllLeads && lead.assignedToId !== session.user.id) {
     throw new Error("Unauthorized");
   }
 
@@ -527,7 +542,7 @@ export async function getDashboardStats() {
   if (!session) throw new Error("Unauthorized");
 
   const baseWhere: Prisma.LeadWhereInput =
-    session.user.role === "STAFF"
+    session.user.role === "STAFF" && !session.user.canViewAllLeads
       ? { assignedToId: session.user.id }
       : {};
 
@@ -559,7 +574,7 @@ export async function getFunnelData() {
   if (!session) throw new Error("Unauthorized");
 
   const baseWhere: Prisma.LeadWhereInput =
-    session.user.role === "STAFF"
+    session.user.role === "STAFF" && !session.user.canViewAllLeads
       ? { assignedToId: session.user.id }
       : {};
 
@@ -635,7 +650,7 @@ export async function getFollowUpsDueToday() {
   const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 
   const baseWhere: Prisma.LeadWhereInput =
-    session.user.role === "STAFF"
+    session.user.role === "STAFF" && !session.user.canViewAllLeads
       ? { assignedToId: session.user.id }
       : {};
 

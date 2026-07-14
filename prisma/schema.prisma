@@ -8,81 +8,122 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String
-  email         String   @unique
+  email         String         @unique
   passwordHash  String
-  role          Role     @default(STAFF)
-  active        Boolean  @default(true)
-  createdAt     DateTime @default(now())
-
-  leadsAssigned Lead[]        @relation("AssignedLeads")
-  leadsCreated  Lead[]        @relation("CreatedLeads")
-  followUps     FollowUp[]
+  role            Role           @default(STAFF)
+  active          Boolean        @default(true)
+  canViewAllLeads Boolean        @default(false)
+  createdAt       DateTime       @default(now())
   activityLogs  ActivityLog[]
+  followUps     FollowUp[]
   importBatches ImportBatch[]
+  leadsAssigned Lead[]         @relation("AssignedLeads")
+  leadsCreated  Lead[]         @relation("CreatedLeads")
   staffSessions StaffSession[]
 }
 
 model StaffSession {
   id          String   @id @default(cuid())
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   date        DateTime @default(now())
   firstPingAt DateTime @default(now())
   lastPingAt  DateTime @default(now())
   duration    Int      @default(0)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, date])
 }
 
-enum Role {
-  ADMIN
-  STAFF
-}
-
 model Lead {
-  id              String       @id @default(cuid())
+  id              String        @id @default(cuid())
   businessName    String
   contactPerson   String?
   phone           String
-  phoneNormalized String       // digits only, for dedup matching
+  phoneNormalized String
   altPhone        String?
   email           String?
   website         String?
   address         String?
-
   city            String
   state           String
-  country         String       @default("India")
-
-  category        String       // business category, free-select from taxonomy
-  source          String?      // "Google Maps scrape", "Referral", "Cold list", etc.
-
-  status          LeadStatus   @default(NEW)
-  tags            String[]     @default([])
+  country         String        @default("India")
+  category        String
+  source          String?
+  status          LeadStatus    @default(NEW)
+  tags            String[]      @default([])
   notes           String?
-
   assignedToId    String?
-  assignedTo      User?        @relation("AssignedLeads", fields: [assignedToId], references: [id])
   createdById     String
-  createdBy       User         @relation("CreatedLeads", fields: [createdById], references: [id])
-
   importBatchId   String?
-  importBatch     ImportBatch? @relation(fields: [importBatchId], references: [id])
-
-  followUps       FollowUp[]
-  denyReason      DenyReason?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
   activityLogs    ActivityLog[]
-
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  denyReason      DenyReason?
+  followUps       FollowUp[]
+  assignedTo      User?         @relation("AssignedLeads", fields: [assignedToId], references: [id])
+  createdBy       User          @relation("CreatedLeads", fields: [createdById], references: [id])
+  importBatch     ImportBatch?  @relation(fields: [importBatchId], references: [id])
 
   @@index([city, state, country])
   @@index([category])
   @@index([status])
   @@index([phoneNormalized])
   @@index([assignedToId])
+}
+
+model FollowUp {
+  id             String    @id @default(cuid())
+  leadId         String
+  staffId        String
+  notes          String
+  outcome        String?
+  nextFollowUpAt DateTime?
+  createdAt      DateTime  @default(now())
+  lead           Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  staff          User      @relation(fields: [staffId], references: [id])
+
+  @@index([leadId])
+  @@index([nextFollowUpAt])
+}
+
+model DenyReason {
+  id        String   @id @default(cuid())
+  leadId    String   @unique
+  category  String
+  details   String?
+  createdAt DateTime @default(now())
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+}
+
+model ImportBatch {
+  id           String   @id @default(cuid())
+  source       String
+  fileName     String?
+  importedById String
+  rowCount     Int
+  createdAt    DateTime @default(now())
+  importedBy   User     @relation(fields: [importedById], references: [id])
+  leads        Lead[]
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  leadId    String
+  userId    String
+  action    String
+  detail    String?
+  createdAt DateTime @default(now())
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([leadId])
+}
+
+enum Role {
+  ADMIN
+  STAFF
 }
 
 enum LeadStatus {
@@ -92,53 +133,4 @@ enum LeadStatus {
   INTERESTED
   CONVERTED
   NOT_INTERESTED
-}
-
-model FollowUp {
-  id             String    @id @default(cuid())
-  leadId         String
-  lead           Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  staffId        String
-  staff          User      @relation(fields: [staffId], references: [id])
-  notes          String
-  outcome        String?   // "No answer", "Asked to call back", "Interested", etc.
-  nextFollowUpAt DateTime?
-  createdAt      DateTime  @default(now())
-
-  @@index([leadId])
-  @@index([nextFollowUpAt])
-}
-
-model DenyReason {
-  id        String   @id @default(cuid())
-  leadId    String   @unique
-  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  category  String   // "Price", "Competitor", "Wrong number", "Closed business", "No response"
-  details   String?
-  createdAt DateTime @default(now())
-}
-
-model ImportBatch {
-  id          String   @id @default(cuid())
-  source      String   // "excel", "word", "paste"
-  fileName    String?
-  importedById String
-  importedBy  User     @relation(fields: [importedById], references: [id])
-  rowCount    Int
-  createdAt   DateTime @default(now())
-
-  leads       Lead[]
-}
-
-model ActivityLog {
-  id        String   @id @default(cuid())
-  leadId    String
-  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  action    String   // "status_changed", "assigned", "note_added"
-  detail    String?
-  createdAt DateTime @default(now())
-
-  @@index([leadId])
 }

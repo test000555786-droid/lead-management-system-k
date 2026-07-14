@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { toggleStaffActive } from "@/lib/actions";
+import { toggleStaffActive, toggleStaffViewAllLeads } from "@/lib/actions";
 
 type StaffMember = {
   id: string;
@@ -15,6 +15,7 @@ type StaffMember = {
   role: string;
   active: boolean;
   createdAt: Date;
+  canViewAllLeads: boolean;
   _count: { leadsAssigned: number };
   activeTimeToday?: number;
 };
@@ -37,6 +38,13 @@ export function StaffTable({ staff, currentUserId }: { staff: StaffMember[]; cur
     });
   }
 
+  function handleToggleViewAll(userId: string, currentCanViewAll: boolean) {
+    startTransition(async () => {
+      try { await toggleStaffViewAllLeads(userId, !currentCanViewAll); }
+      catch (err) { alert(err instanceof Error ? err.message : "Failed to update"); }
+    });
+  }
+
   return (
     <div className="rounded-xl border border-[var(--crm-border)] bg-[var(--crm-surface)] shadow-sm overflow-hidden">
       <Table>
@@ -49,13 +57,14 @@ export function StaffTable({ staff, currentUserId }: { staff: StaffMember[]; cur
             <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Leads Assigned</TableHead>
             <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Status</TableHead>
             <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Active</TableHead>
+            <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">View All Leads</TableHead>
             <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10 text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {staff.length === 0 && (
             <TableRow>
-              <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">No staff members yet</TableCell>
+              <TableCell colSpan={9} className="h-24 text-center text-muted-foreground">No staff members yet</TableCell>
             </TableRow>
           )}
           {staff.map((member) => (
@@ -85,6 +94,13 @@ export function StaffTable({ staff, currentUserId }: { staff: StaffMember[]; cur
               </TableCell>
               <TableCell>
                 <Switch checked={member.active} disabled={member.id === currentUserId || isPending} onCheckedChange={() => handleToggle(member.id, member.active)} />
+              </TableCell>
+              <TableCell>
+                {member.role === "STAFF" ? (
+                  <Switch checked={member.canViewAllLeads} disabled={isPending} onCheckedChange={() => handleToggleViewAll(member.id, member.canViewAllLeads)} />
+                ) : (
+                  <span className="text-muted-foreground text-xs">N/A</span>
+                )}
               </TableCell>
               <TableCell className="text-right">
                 <Button variant="ghost" size="sm" asChild className="text-[var(--crm-accent)] hover:text-[var(--crm-accent-hover)] hover:bg-[var(--crm-accent-tint)]">

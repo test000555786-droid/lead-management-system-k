@@ -6,10 +6,12 @@ declare module "next-auth" {
     user: {
       id: string;
       role: Role;
+      canViewAllLeads: boolean;
     } & DefaultSession["user"];
   }
   interface User {
     role: Role;
+    canViewAllLeads: boolean;
   }
 }
 
@@ -17,5 +19,6 @@ declare module "next-auth/jwt" {
   interface JWT {
     role: Role;
     id: string;
+    canViewAllLeads: boolean;
   }
 }
