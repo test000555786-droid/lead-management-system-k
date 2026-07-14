@@ -198,12 +198,7 @@ export async function getLeads(params: {
   const andConditions: Prisma.LeadWhereInput[] = [];
 
   if (session.user.role === "STAFF") {
-    andConditions.push({
-      OR: [
-        { assignedToId: session.user.id },
-        { assignedToId: null },
-      ],
-    });
+    andConditions.push({ assignedToId: session.user.id });
   }
 
   if (params.city) {
@@ -229,6 +224,8 @@ export async function getLeads(params: {
   if (params.assignedTo) {
     if (params.assignedTo === "null" || params.assignedTo === "unassigned") {
       andConditions.push({ assignedToId: null });
+    } else if (params.assignedTo === "me") {
+      andConditions.push({ assignedToId: session.user.id });
     } else {
       andConditions.push({ assignedToId: params.assignedTo });
     }
@@ -297,7 +294,7 @@ export async function getLeadById(leadId: string) {
   if (!lead) throw new Error("Lead not found");
 
   if (session.user.role === "STAFF") {
-    if (lead.assignedToId && lead.assignedToId !== session.user.id) {
+    if (lead.assignedToId !== session.user.id) {
       throw new Error("Unauthorized");
     }
   }
@@ -352,7 +349,7 @@ export async function updateLeadStatus(data: z.infer<typeof statusChangeSchema>)
   });
   if (!lead) throw new Error("Lead not found");
 
-  if (session.user.role === "STAFF" && lead.assignedToId && lead.assignedToId !== session.user.id) {
+  if (session.user.role === "STAFF" && lead.assignedToId !== session.user.id) {
     throw new Error("Unauthorized");
   }
 
@@ -485,7 +482,7 @@ export async function addFollowUp(leadId: string, notes: string, nextFollowUpAt?
   });
   if (!lead) throw new Error("Lead not found");
 
-  if (session.user.role === "STAFF" && lead.assignedToId && lead.assignedToId !== session.user.id) {
+  if (session.user.role === "STAFF" && lead.assignedToId !== session.user.id) {
     throw new Error("Unauthorized");
   }
 
@@ -522,7 +519,7 @@ export async function getDashboardStats() {
 
   const baseWhere: Prisma.LeadWhereInput =
     session.user.role === "STAFF"
-      ? { OR: [{ assignedToId: session.user.id }, { assignedToId: null }] }
+      ? { assignedToId: session.user.id }
       : {};
 
   const now = new Date();
@@ -554,7 +551,7 @@ export async function getFunnelData() {
 
   const baseWhere: Prisma.LeadWhereInput =
     session.user.role === "STAFF"
-      ? { OR: [{ assignedToId: session.user.id }, { assignedToId: null }] }
+      ? { assignedToId: session.user.id }
       : {};
 
   const statuses = ["NEW", "CONTACTED", "INTERESTED", "CONVERTED"] as const;
@@ -623,7 +620,7 @@ export async function getFollowUpsDueToday() {
 
   const baseWhere: Prisma.LeadWhereInput =
     session.user.role === "STAFF"
-      ? { OR: [{ assignedToId: session.user.id }, { assignedToId: null }] }
+      ? { assignedToId: session.user.id }
       : {};
 
   const followUps = await prisma.followUp.findMany({

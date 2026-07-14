@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, UserCog, Upload, Menu, LogOut, Hexagon } from "lucide-react";
+import { LayoutDashboard, Users, UserCog, Upload, Menu, LogOut, Hexagon, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { handleSignOut } from "@/lib/actions";
 import { useState } from "react";
@@ -15,6 +15,7 @@ export function Sidebar({ user }: { user: { name: string; role: string } }) {
   const navItems = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard, adminOnly: false },
     { name: "Leads", href: "/leads", icon: Users, adminOnly: false },
+    { name: "My Leads", href: "/my-leads", icon: UserCheck, adminOnly: false },
     { name: "Import", href: "/leads/import", icon: Upload, adminOnly: true },
     { name: "Staff", href: "/admin/staff", icon: UserCog, adminOnly: true },
   ];

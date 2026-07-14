@@ -144,8 +144,9 @@ export function LeadTable({ leads, isAdmin, currentUserId, staffList = [] }: { l
             {leads.map((lead, index) => (
               <TableRow 
                 key={lead.id} 
-                className={`cursor-pointer border-b-[var(--crm-border)] hover:bg-slate-50/50 transition-colors relative ${selectedLeads.has(lead.id) ? "bg-[var(--crm-accent-tint)]/50" : ""}`}
+                className={`cursor-pointer border-b-[var(--crm-border)] transition-colors relative ${selectedLeads.has(lead.id) ? "bg-[var(--crm-accent-tint)]/50" : "hover:brightness-[0.97]"}`}
                 onClick={() => setSelectedLeadId(lead.id)}
+                style={!selectedLeads.has(lead.id) ? { backgroundColor: `color-mix(in srgb, ${statusColorMap[lead.status]} 7%, transparent)` } : undefined}
               >
                 {isAdmin && (
                   <TableCell className="w-12 text-center px-0 pl-4 relative" onClick={(e) => e.stopPropagation()}>

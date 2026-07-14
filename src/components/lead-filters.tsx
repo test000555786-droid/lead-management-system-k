@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useCallback, useTransition } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -41,8 +41,10 @@ export function LeadFilters({ options }: { options: FilterOptions }) {
     startTransition(() => { router.push(`?${createQueryString(name, value)}`); });
   }
 
+  const pathname = usePathname();
+
   function clearFilters() {
-    startTransition(() => { router.push("/leads"); });
+    startTransition(() => { router.push(pathname); });
   }
 
   const hasFilters = searchParams.toString().length > 0 && searchParams.toString() !== `search=${searchParams.get("search") || ""}`;
