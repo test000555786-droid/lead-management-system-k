@@ -202,7 +202,7 @@ export async function createLead(data: z.infer<typeof createLeadSchema>) {
   });
 
   revalidatePath("/leads");
-  return lead;
+  return { success: true, id: lead.id };
 }
 
 export async function getLeads(params: {
