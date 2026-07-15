@@ -9,6 +9,8 @@ export const statusColorMap: Record<LeadStatus, string> = {
   INTERESTED: "var(--status-interested)",
   CONVERTED: "var(--status-converted)",
   NOT_INTERESTED: "var(--status-not-interested)",
+  NOT_ANSWERED: "var(--status-not-answered)",
+  NOT_REACHABLE: "var(--status-not-reachable)",
 };
 
 export const statusLabelMap: Record<LeadStatus, string> = {
@@ -18,6 +20,8 @@ export const statusLabelMap: Record<LeadStatus, string> = {
   INTERESTED: "Interested",
   CONVERTED: "Converted",
   NOT_INTERESTED: "Not Interested",
+  NOT_ANSWERED: "Not Answered",
+  NOT_REACHABLE: "Customer Busy/Not Reachable/Not connected",
 };
 
 export function LeadStatusBadge({ status }: { status: LeadStatus }) {

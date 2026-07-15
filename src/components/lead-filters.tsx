@@ -61,6 +61,8 @@ export function LeadFilters({ options }: { options: FilterOptions }) {
           <SelectItem value="INTERESTED">Interested</SelectItem>
           <SelectItem value="CONVERTED">Converted</SelectItem>
           <SelectItem value="NOT_INTERESTED">Not Interested</SelectItem>
+          <SelectItem value="NOT_ANSWERED">Not Answered</SelectItem>
+          <SelectItem value="NOT_REACHABLE">Customer Busy/Not Reachable/Not connected</SelectItem>
         </SelectContent>
       </Select>
 

@@ -349,7 +349,7 @@ export async function getFilterOptions() {
 
 const statusChangeSchema = z.object({
   leadId: z.string(),
-  status: z.enum(["NEW", "CONTACTED", "FOLLOW_UP", "INTERESTED", "CONVERTED", "NOT_INTERESTED"]),
+  status: z.enum(["NEW", "CONTACTED", "FOLLOW_UP", "INTERESTED", "CONVERTED", "NOT_INTERESTED", "NOT_ANSWERED", "NOT_REACHABLE"]),
   notes: z.string().optional(),
   nextFollowUpAt: z.string().optional(),
   denyCategory: z.string().optional(),

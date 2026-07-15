@@ -42,6 +42,8 @@
     --status-interested: #0D9488;
     --status-converted: #16A34A;
     --status-not-interested: #DC2626;
+    --status-not-answered: #8B5CF6;
+    --status-not-reachable: #F59E0B;
   }
 
   .dark {

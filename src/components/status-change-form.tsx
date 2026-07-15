@@ -27,7 +27,7 @@ import {
 import { Loader2 } from "lucide-react";
 
 const schema = z.object({
-  status: z.enum(["NEW", "CONTACTED", "FOLLOW_UP", "INTERESTED", "CONVERTED", "NOT_INTERESTED"]),
+  status: z.enum(["NEW", "CONTACTED", "FOLLOW_UP", "INTERESTED", "CONVERTED", "NOT_INTERESTED", "NOT_ANSWERED", "NOT_REACHABLE"]),
   notes: z.string().optional(),
   nextFollowUpAt: z.string().optional(),
   denyCategory: z.string().optional(),
@@ -85,6 +85,8 @@ export function StatusChangeForm({ leadId, currentStatus, onSuccess }: { leadId:
                 <SelectItem value="INTERESTED">Interested</SelectItem>
                 <SelectItem value="CONVERTED">Converted</SelectItem>
                 <SelectItem value="NOT_INTERESTED">Not Interested</SelectItem>
+                <SelectItem value="NOT_ANSWERED">Not Answered</SelectItem>
+                <SelectItem value="NOT_REACHABLE">Customer Busy/Not Reachable/Not connected</SelectItem>
               </SelectContent>
             </Select>
             <FormMessage />
