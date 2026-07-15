@@ -753,32 +753,32 @@ export async function pingSession() {
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  await prisma.$transaction(async (tx) => {
-    const existing = await tx.staffSession.findFirst({
-      where: {
-        userId: session.user.id,
-        date: { gte: todayStart },
+  const existing = await prisma.staffSession.findFirst({
+    where: {
+      userId: session.user.id,
+      date: { gte: todayStart },
+    },
+    orderBy: { date: "desc" },
+  });
+
+  if (existing) {
+    // Calculate diff in seconds since last ping
+    const diffSeconds = Math.floor((now.getTime() - existing.lastPingAt.getTime()) / 1000);
+    
+    // If the ping is within a reasonable active timeframe (e.g., < 5 minutes), add to duration.
+    // Otherwise, they might have closed the tab and come back, so we just update lastPingAt without adding the gap.
+    const addDuration = diffSeconds > 0 && diffSeconds <= 300 ? diffSeconds : 0;
+
+    await prisma.staffSession.update({
+      where: { id: existing.id },
+      data: {
+        lastPingAt: now,
+        duration: existing.duration + addDuration,
       },
-      orderBy: { date: "desc" },
     });
-
-    if (existing) {
-      // Calculate diff in seconds since last ping
-      const diffSeconds = Math.floor((now.getTime() - existing.lastPingAt.getTime()) / 1000);
-      
-      // If the ping is within a reasonable active timeframe (e.g., < 5 minutes), add to duration.
-      // Otherwise, they might have closed the tab and come back, so we just update lastPingAt without adding the gap.
-      const addDuration = diffSeconds > 0 && diffSeconds <= 300 ? diffSeconds : 0;
-
-      await tx.staffSession.update({
-        where: { id: existing.id },
-        data: {
-          lastPingAt: now,
-          duration: existing.duration + addDuration,
-        },
-      });
-    } else {
-      await tx.staffSession.create({
+  } else {
+    try {
+      await prisma.staffSession.create({
         data: {
           userId: session.user.id,
           date: todayStart,
@@ -787,8 +787,10 @@ export async function pingSession() {
           duration: 0,
         },
       });
+    } catch (error) {
+      // Ignore unique constraint violations if created concurrently
     }
-  });
+  }
 
   return { success: true };
 }
