@@ -90,10 +90,12 @@ export default function ImportLeadsClient() {
     <div className="space-y-6">
       {!parsedLeads.length ? (
         <Tabs defaultValue="paste" onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 h-auto gap-1">
             <TabsTrigger value="paste">Paste Text</TabsTrigger>
             <TabsTrigger value="excel">Excel (.xlsx)</TabsTrigger>
             <TabsTrigger value="word">Word (.docx)</TabsTrigger>
+            <TabsTrigger value="json">JSON (.json)</TabsTrigger>
+            <TabsTrigger value="jsonl">JSONL (.jsonl)</TabsTrigger>
           </TabsList>
           
           <TabsContent value="paste">
@@ -179,6 +181,70 @@ export default function ImportLeadsClient() {
               <CardFooter>
                 <Button 
                   onClick={() => handleParse("word")} 
+                  disabled={isLoading || !file}
+                  className="bg-[var(--crm-accent)] hover:bg-[var(--crm-accent-hover)] text-white shadow-sm"
+                >
+                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Extract Leads
+                </Button>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="json">
+            <Card className="shadow-sm border-[var(--crm-border)] rounded-xl bg-[var(--crm-surface)]">
+              <CardHeader>
+                <CardTitle>Upload JSON</CardTitle>
+                <CardDescription>
+                  Upload a JSON file. We will extract the text and parse the leads.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid w-full max-w-sm items-center gap-1.5">
+                  <Label htmlFor="json-file">JSON File</Label>
+                  <Input 
+                    id="json-file" 
+                    type="file" 
+                    accept=".json" 
+                    onChange={(e) => setFile(e.target.files?.[0] || null)}
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button 
+                  onClick={() => handleParse("json")} 
+                  disabled={isLoading || !file}
+                  className="bg-[var(--crm-accent)] hover:bg-[var(--crm-accent-hover)] text-white shadow-sm"
+                >
+                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Extract Leads
+                </Button>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="jsonl">
+            <Card className="shadow-sm border-[var(--crm-border)] rounded-xl bg-[var(--crm-surface)]">
+              <CardHeader>
+                <CardTitle>Upload JSONL</CardTitle>
+                <CardDescription>
+                  Upload a JSONL (JSON Lines) file. We will extract the text and parse the leads.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid w-full max-w-sm items-center gap-1.5">
+                  <Label htmlFor="jsonl-file">JSONL File</Label>
+                  <Input 
+                    id="jsonl-file" 
+                    type="file" 
+                    accept=".jsonl" 
+                    onChange={(e) => setFile(e.target.files?.[0] || null)}
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button 
+                  onClick={() => handleParse("jsonl")} 
                   disabled={isLoading || !file}
                   className="bg-[var(--crm-accent)] hover:bg-[var(--crm-accent-hover)] text-white shadow-sm"
                 >

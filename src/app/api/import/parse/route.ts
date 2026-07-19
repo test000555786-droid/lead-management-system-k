@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
     if (source === "paste") {
       textToParse = formData.get("text") as string;
-    } else if (source === "excel" || source === "word") {
+    } else if (source === "excel" || source === "word" || source === "json" || source === "jsonl") {
       const file = formData.get("file") as File;
       if (!file) {
         return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -34,6 +34,8 @@ export async function POST(req: Request) {
       } else if (source === "word") {
         const result = await mammoth.extractRawText({ buffer });
         textToParse = result.value;
+      } else if (source === "json" || source === "jsonl") {
+        textToParse = buffer.toString("utf-8");
       }
     } else {
       return NextResponse.json({ error: "Invalid source" }, { status: 400 });
