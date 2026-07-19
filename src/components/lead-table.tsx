@@ -111,7 +111,7 @@ export function LeadTable({ leads, isAdmin, currentUserId, staffList = [] }: { l
       )}
 
       <div className="rounded-xl border border-[var(--crm-border)] bg-[var(--crm-surface)] shadow-sm overflow-hidden">
-        <Table>
+        <Table className="table-fixed min-w-[1000px]">
           <TableHeader>
             <TableRow className="border-b-[var(--crm-border)] hover:bg-transparent">
               {isAdmin && (
