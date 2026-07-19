@@ -124,7 +124,7 @@ export function LeadTable({ leads, isAdmin, currentUserId, staffList = [] }: { l
                 </TableHead>
               )}
               <TableHead className="w-8 text-center uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10 px-0 pl-2">#</TableHead>
-              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10 pl-2">Business</TableHead>
+              <TableHead className="w-full min-w-[200px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10 pl-2">Business</TableHead>
               <TableHead className="w-[100px] lg:w-[120px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Contact</TableHead>
               <TableHead className="w-[110px] lg:w-[130px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Phone</TableHead>
               <TableHead className="w-[100px] lg:w-[120px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">City</TableHead>
