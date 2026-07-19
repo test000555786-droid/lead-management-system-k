@@ -21,7 +21,7 @@ export const statusLabelMap: Record<LeadStatus, string> = {
   CONVERTED: "Converted",
   NOT_INTERESTED: "Not Interested",
   NOT_ANSWERED: "Not Answered",
-  NOT_REACHABLE: "Customer Busy/Not Reachable/Not connected",
+  NOT_REACHABLE: "Not Reachable",
 };
 
 export function LeadStatusBadge({ status }: { status: LeadStatus }) {
