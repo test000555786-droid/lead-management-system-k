@@ -125,14 +125,14 @@ export function LeadTable({ leads, isAdmin, currentUserId, staffList = [] }: { l
               )}
               <TableHead className="w-8 text-center uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10 px-0 pl-2">#</TableHead>
               <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10 pl-2">Business</TableHead>
-              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Contact</TableHead>
-              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Phone</TableHead>
-              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">City</TableHead>
-              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">State</TableHead>
-              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Category</TableHead>
-              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Status</TableHead>
-              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Assigned</TableHead>
-              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Last Activity</TableHead>
+              <TableHead className="w-[100px] lg:w-[120px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Contact</TableHead>
+              <TableHead className="w-[110px] lg:w-[130px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Phone</TableHead>
+              <TableHead className="w-[100px] lg:w-[120px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">City</TableHead>
+              <TableHead className="w-[80px] lg:w-[100px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">State</TableHead>
+              <TableHead className="w-[120px] lg:w-[140px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Category</TableHead>
+              <TableHead className="w-[100px] lg:w-[110px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Status</TableHead>
+              <TableHead className="w-[100px] lg:w-[120px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Assigned</TableHead>
+              <TableHead className="w-[90px] lg:w-[100px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Last Activity</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
