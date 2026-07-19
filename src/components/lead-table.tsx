@@ -124,15 +124,15 @@ export function LeadTable({ leads, isAdmin, currentUserId, staffList = [] }: { l
                 </TableHead>
               )}
               <TableHead className="w-8 text-center uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10 px-0 pl-2">#</TableHead>
-              <TableHead className="w-full min-w-[200px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10 pl-2">Business</TableHead>
-              <TableHead className="w-[100px] lg:w-[120px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Contact</TableHead>
-              <TableHead className="w-[110px] lg:w-[130px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Phone</TableHead>
-              <TableHead className="w-[100px] lg:w-[120px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">City</TableHead>
-              <TableHead className="w-[80px] lg:w-[100px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">State</TableHead>
-              <TableHead className="w-[120px] lg:w-[140px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Category</TableHead>
-              <TableHead className="w-[100px] lg:w-[110px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Status</TableHead>
-              <TableHead className="w-[100px] lg:w-[120px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Assigned</TableHead>
-              <TableHead className="w-[90px] lg:w-[100px] uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Last Activity</TableHead>
+              <TableHead className="uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10 pl-2">Business</TableHead>
+              <TableHead className="w-[1%] whitespace-nowrap uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Contact</TableHead>
+              <TableHead className="w-[1%] whitespace-nowrap uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Phone</TableHead>
+              <TableHead className="w-[1%] whitespace-nowrap uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">City</TableHead>
+              <TableHead className="w-[1%] whitespace-nowrap uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">State</TableHead>
+              <TableHead className="w-[1%] whitespace-nowrap uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Category</TableHead>
+              <TableHead className="w-[1%] whitespace-nowrap uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Status</TableHead>
+              <TableHead className="w-[1%] whitespace-nowrap uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Assigned</TableHead>
+              <TableHead className="w-[1%] whitespace-nowrap uppercase text-[10px] tracking-wider text-[var(--crm-text-secondary)] font-medium h-10">Last Activity</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -173,13 +173,13 @@ export function LeadTable({ leads, isAdmin, currentUserId, staffList = [] }: { l
                 <TableCell className="font-medium text-[var(--crm-text-primary)] relative pl-2">
                   <span className={isAdmin ? "" : "pl-2"}>{lead.businessName}</span>
                 </TableCell>
-                <TableCell className="text-[var(--crm-text-primary)]">{lead.contactPerson || "—"}</TableCell>
-                <TableCell className="tabular-nums text-[var(--crm-text-primary)]">{formatPhoneForDisplay(lead.phone)}</TableCell>
-                <TableCell className="text-[var(--crm-text-secondary)]">{lead.city}</TableCell>
-                <TableCell className="text-[var(--crm-text-secondary)]">{lead.state}</TableCell>
-                <TableCell className="text-[var(--crm-text-secondary)]">{lead.category}</TableCell>
-                <TableCell><LeadStatusBadge status={lead.status} /></TableCell>
-                <TableCell>
+                <TableCell className="whitespace-nowrap text-[var(--crm-text-primary)]">{lead.contactPerson || "—"}</TableCell>
+                <TableCell className="whitespace-nowrap tabular-nums text-[var(--crm-text-primary)]">{formatPhoneForDisplay(lead.phone)}</TableCell>
+                <TableCell className="whitespace-nowrap text-[var(--crm-text-secondary)]">{lead.city}</TableCell>
+                <TableCell className="whitespace-nowrap text-[var(--crm-text-secondary)]">{lead.state}</TableCell>
+                <TableCell className="whitespace-nowrap text-[var(--crm-text-secondary)]">{lead.category}</TableCell>
+                <TableCell className="whitespace-nowrap"><LeadStatusBadge status={lead.status} /></TableCell>
+                <TableCell className="whitespace-nowrap">
                   {lead.assignedTo ? (
                     <span className="text-[var(--crm-text-primary)]">
                       {!isAdmin && lead.assignedTo.id !== currentUserId ? "Staff" : lead.assignedTo.name}
@@ -188,7 +188,7 @@ export function LeadTable({ leads, isAdmin, currentUserId, staffList = [] }: { l
                     <span className="text-xs text-muted-foreground uppercase tracking-wider">Unassigned</span>
                   )}
                 </TableCell>
-                <TableCell className="text-xs text-[var(--crm-text-secondary)] tabular-nums" suppressHydrationWarning>
+                <TableCell className="whitespace-nowrap text-xs text-[var(--crm-text-secondary)] tabular-nums" suppressHydrationWarning>
                   {lead.followUps.length > 0 ? new Date(lead.followUps[0].createdAt).toLocaleDateString() : new Date(lead.updatedAt).toLocaleDateString()}
                 </TableCell>
               </TableRow>
