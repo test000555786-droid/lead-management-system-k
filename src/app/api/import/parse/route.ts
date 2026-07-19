@@ -45,11 +45,50 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No text to parse" }, { status: 400 });
     }
 
-    // Initialize Groq
-    const apiKey = process.env.GROQ_API_KEY;
-    if (!apiKey) {
+    // Direct parse for JSON if valid, bypass LLM
+    if (source === "json") {
+      try {
+        const parsed = JSON.parse(textToParse);
+        const leadsArray = parsed.leads || parsed.data || (Array.isArray(parsed) ? parsed : Object.values(parsed)[0]);
+        if (Array.isArray(leadsArray) && leadsArray.length > 0 && typeof leadsArray[0] === 'object') {
+          return NextResponse.json({ leads: leadsArray });
+        }
+      } catch (e) {
+        // Fallback to LLM if direct parsing fails or format is unrecognized
+      }
+    } else if (source === "jsonl") {
+      try {
+        const lines = textToParse.split(/\r?\n/).filter(line => line.trim().length > 0);
+        const leadsArray = lines.map(line => JSON.parse(line));
+        if (leadsArray.length > 0 && typeof leadsArray[0] === 'object') {
+          return NextResponse.json({ leads: leadsArray });
+        }
+      } catch (e) {
+        // Fallback to LLM if direct parsing fails
+      }
+    }
+
+    // Cap text to avoid TPM (Tokens Per Minute) rate limits on the Groq API
+    // 6,000 TPM limit means we need to restrict the input even more.
+    // 15,000 characters is roughly 3,500 tokens, leaving room for prompt and response.
+    if (textToParse.length > 15000) {
+      textToParse = textToParse.slice(0, 15000);
+    }
+
+    // Initialize Groq with support for multiple comma-separated API keys
+    const apiKeyEnv = process.env.GROQ_API_KEY;
+    if (!apiKeyEnv) {
       return NextResponse.json({ error: "GROQ_API_KEY is not set" }, { status: 500 });
     }
+    
+    // Split by comma, trim whitespace, and remove empty entries
+    const apiKeys = apiKeyEnv.split(",").map(k => k.trim()).filter(Boolean);
+    if (apiKeys.length === 0) {
+      return NextResponse.json({ error: "No valid GROQ_API_KEY found" }, { status: 500 });
+    }
+    
+    // Randomly pick one key to distribute the rate limit load
+    const apiKey = apiKeys[Math.floor(Math.random() * apiKeys.length)];
     const groq = new Groq({ apiKey });
 
     const prompt = `
@@ -78,7 +117,7 @@ export async function POST(req: Request) {
 
     const chatCompletion = await groq.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
-      model: "llama-3.3-70b-versatile", // We use a newer Llama model for better schema adherence
+      model: "llama-3.1-8b-instant", // Using 8b-instant which has significantly higher TPM limits
       response_format: { type: "json_object" },
     });
 
