@@ -85,13 +85,13 @@ export function LeadDetailSheet({ leadId, open, onOpenChange, isAdmin, currentUs
   const timelineItems = [
     ...lead.followUps.map((f) => ({
       id: f.id, type: "followup" as const, createdAt: f.createdAt,
-      title: `Follow-up by ${f.staff.name}`, description: f.notes,
+      title: `Follow-up by ${!isAdmin && f.staff.id !== currentUserId ? "Staff" : f.staff.name}`, description: f.notes,
       meta: f.nextFollowUpAt ? `Next follow-up: ${new Date(f.nextFollowUpAt).toLocaleString()}` : undefined,
     })),
     ...lead.activityLogs.map((a) => ({
       id: a.id, type: "activity" as const, createdAt: a.createdAt,
       title: a.action.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase()),
-      description: a.detail, meta: `By ${a.user.name}`,
+      description: a.detail, meta: `By ${!isAdmin && a.user.id !== currentUserId ? "Staff" : a.user.name}`,
     })),
   ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
@@ -165,7 +165,11 @@ export function LeadDetailSheet({ leadId, open, onOpenChange, isAdmin, currentUs
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <p className="text-sm">{lead.assignedTo ? `Assigned to: ${lead.assignedTo.name}` : "Unassigned"}</p>
+                <p className="text-sm">
+                  {lead.assignedTo 
+                    ? `Assigned to: ${!isAdmin && lead.assignedTo.id !== currentUserId ? "Staff" : lead.assignedTo.name}` 
+                    : "Unassigned"}
+                </p>
                 {isUnassigned && (
                   <Button size="sm" onClick={() => handleAssign(currentUserId)} disabled={assignLoading}>
                     {assignLoading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : null} Claim

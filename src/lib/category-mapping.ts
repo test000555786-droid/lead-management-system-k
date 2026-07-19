@@ -1,4 +1,17 @@
 export const CATEGORY_MAPPINGS: Record<string, string[]> = {
+  "Education": [
+    "Coaching center",
+    "School",
+    "Education",
+    "College",
+    "University",
+    "Institute",
+    "Tuition center",
+    "Educational institution",
+    "Training center",
+    "Coaching",
+    "Tutor"
+  ],
   "Events & Venues": [
     "Auditorium",
     "Banquet hall",

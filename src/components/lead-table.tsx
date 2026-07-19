@@ -179,7 +179,15 @@ export function LeadTable({ leads, isAdmin, currentUserId, staffList = [] }: { l
                 <TableCell className="text-[var(--crm-text-secondary)]">{lead.state}</TableCell>
                 <TableCell className="text-[var(--crm-text-secondary)]">{lead.category}</TableCell>
                 <TableCell><LeadStatusBadge status={lead.status} /></TableCell>
-                <TableCell>{lead.assignedTo ? <span className="text-[var(--crm-text-primary)]">{lead.assignedTo.name}</span> : <span className="text-xs text-muted-foreground uppercase tracking-wider">Unassigned</span>}</TableCell>
+                <TableCell>
+                  {lead.assignedTo ? (
+                    <span className="text-[var(--crm-text-primary)]">
+                      {!isAdmin && lead.assignedTo.id !== currentUserId ? "Staff" : lead.assignedTo.name}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider">Unassigned</span>
+                  )}
+                </TableCell>
                 <TableCell className="text-xs text-[var(--crm-text-secondary)] tabular-nums" suppressHydrationWarning>
                   {lead.followUps.length > 0 ? new Date(lead.followUps[0].createdAt).toLocaleDateString() : new Date(lead.updatedAt).toLocaleDateString()}
                 </TableCell>

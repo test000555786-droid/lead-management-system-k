@@ -303,11 +303,11 @@ export async function getLeadById(leadId: string) {
       assignedTo: { select: { id: true, name: true } },
       createdBy: { select: { id: true, name: true } },
       followUps: {
-        include: { staff: { select: { name: true } } },
+        include: { staff: { select: { id: true, name: true } } },
         orderBy: { createdAt: "desc" },
       },
       activityLogs: {
-        include: { user: { select: { name: true } } },
+        include: { user: { select: { id: true, name: true } } },
         orderBy: { createdAt: "desc" },
       },
       denyReason: true,
