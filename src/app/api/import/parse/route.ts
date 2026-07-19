@@ -68,11 +68,23 @@ export async function POST(req: Request) {
       }
     }
 
-    // Cap text to avoid TPM (Tokens Per Minute) rate limits on the Groq API
-    // 6,000 TPM limit means we need to restrict the input even more.
-    // 15,000 characters is roughly 3,500 tokens, leaving room for prompt and response.
-    if (textToParse.length > 15000) {
-      textToParse = textToParse.slice(0, 15000);
+    // Chunk the text to bypass the TPM rate limit on Groq API
+    // The llama-3.1-8b-instant model has a strict 6,000 TPM limit on free tiers.
+    // 8,000 characters is roughly 4,000 tokens for CSV data.
+    const MAX_CHUNK_LENGTH = 8000; 
+    const lines = textToParse.split(/\r?\n/);
+    const chunks: string[] = [];
+    let currentChunk = "";
+    
+    for (const line of lines) {
+      if (currentChunk.length + line.length > MAX_CHUNK_LENGTH && currentChunk.length > 0) {
+        chunks.push(currentChunk);
+        currentChunk = "";
+      }
+      currentChunk += line + "\n";
+    }
+    if (currentChunk.trim().length > 0) {
+      chunks.push(currentChunk);
     }
 
     // Initialize Groq with support for multiple comma-separated API keys
@@ -86,48 +98,62 @@ export async function POST(req: Request) {
     if (apiKeys.length === 0) {
       return NextResponse.json({ error: "No valid GROQ_API_KEY found" }, { status: 500 });
     }
-    
-    // Randomly pick one key to distribute the rate limit load
-    const apiKey = apiKeys[Math.floor(Math.random() * apiKeys.length)];
-    const groq = new Groq({ apiKey });
 
-    const prompt = `
-    You are an expert data extraction assistant. I will provide you with raw text that contains business leads (which might be from an email, a pasted list, an Excel CSV dump, or a Word document).
-    Your task is to extract all the leads you can find into a JSON object containing a single key "leads" which maps to an array of objects.
+    // To prevent hitting the rate limit across keys instantly, limit the number of parallel chunks 
+    // to exactly the number of API keys we have (e.g. 3 keys = 3 chunks = ~24,000 chars processed in parallel).
+    const limitedChunks = chunks.slice(0, apiKeys.length);
 
-    Each object MUST match this exact schema:
-    {
-      "businessName": "String (required)",
-      "contactPerson": "String (optional, null if missing)",
-      "phone": "String (required, extract main phone)",
-      "altPhone": "String (optional, null if missing)",
-      "email": "String (optional, null if missing)",
-      "website": "String (optional, null if missing)",
-      "address": "String (optional, null if missing)",
-      "city": "String (required, infer if possible, else 'Unknown')",
-      "state": "String (required, infer if possible, else 'Unknown')",
-      "category": "String (required, guess the business category, e.g. 'Software', 'Real Estate', 'Retail')"
-    }
+    const chunkPromises = limitedChunks.map(async (chunk, index) => {
+      // Assign a unique API key to each concurrent chunk to perfectly distribute the TPM load
+      const apiKey = apiKeys[index % apiKeys.length];
+      const groq = new Groq({ apiKey });
 
-    Raw text to parse:
-    """
-    ${textToParse}
-    """
-    `;
+      const prompt = `
+      You are an expert data extraction assistant. I will provide you with raw text that contains business leads.
+      Your task is to extract all the leads you can find into a JSON object containing a single key "leads" which maps to an array of objects.
 
-    const chatCompletion = await groq.chat.completions.create({
-      messages: [{ role: "user", content: prompt }],
-      model: "llama-3.1-8b-instant", // Using 8b-instant which has significantly higher TPM limits
-      response_format: { type: "json_object" },
+      Each object MUST match this exact schema:
+      {
+        "businessName": "String (required)",
+        "contactPerson": "String (optional, null if missing)",
+        "phone": "String (required, extract main phone)",
+        "altPhone": "String (optional, null if missing)",
+        "email": "String (optional, null if missing)",
+        "website": "String (optional, null if missing)",
+        "address": "String (optional, null if missing)",
+        "city": "String (required, infer if possible, else 'Unknown')",
+        "state": "String (required, infer if possible, else 'Unknown')",
+        "category": "String (required, guess the business category)"
+      }
+
+      Raw text to parse:
+      """
+      ${chunk}
+      """
+      `;
+
+      try {
+        const chatCompletion = await groq.chat.completions.create({
+          messages: [{ role: "user", content: prompt }],
+          model: "llama-3.1-8b-instant",
+          response_format: { type: "json_object" },
+        });
+
+        const responseText = chatCompletion.choices[0]?.message?.content || "{}";
+        const parsedJson = JSON.parse(responseText);
+        const leadsArray = parsedJson.leads || parsedJson.data || Object.values(parsedJson)[0] || [];
+        return Array.isArray(leadsArray) ? leadsArray : [];
+      } catch (e) {
+        console.error(`Error processing chunk ${index}:`, e);
+        return [];
+      }
     });
 
-    const responseText = chatCompletion.choices[0]?.message?.content || "{}";
-    const parsedJson = JSON.parse(responseText);
-    
-    // Ensure we always return an array
-    const leadsArray = parsedJson.leads || parsedJson.data || Object.values(parsedJson)[0] || [];
+    // Execute all chunks in parallel
+    const results = await Promise.all(chunkPromises);
+    const allLeads = results.flat();
 
-    return NextResponse.json({ leads: Array.isArray(leadsArray) ? leadsArray : [] });
+    return NextResponse.json({ leads: allLeads });
   } catch (error: any) {
     console.error("Import Parse Error:", error);
     return NextResponse.json({ error: error.message || "Failed to parse import" }, { status: 500 });
