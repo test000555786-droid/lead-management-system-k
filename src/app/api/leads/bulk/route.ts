@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     });
 
     // Prepare leads for bulk insert
-    const leadsToInsert = leads.map((lead: any) => ({
+    const rawLeadsToInsert = leads.map((lead: any) => ({
       businessName: lead.businessName || "Unknown Business",
       contactPerson: lead.contactPerson || null,
       phone: lead.phone || "",
@@ -49,13 +49,40 @@ export async function POST(req: Request) {
       importBatchId: batch.id,
     }));
 
-    // Bulk create
-    const createdLeads = await prisma.lead.createMany({
-      data: leadsToInsert,
-      skipDuplicates: true,
+    // Deduplicate against the database and within the batch itself
+    const incomingPhones = rawLeadsToInsert
+      .map((l: any) => l.phoneNormalized)
+      .filter((p: string) => p.length > 0);
+
+    const existingLeads = await prisma.lead.findMany({
+      where: { phoneNormalized: { in: incomingPhones } },
+      select: { phoneNormalized: true },
     });
 
-    return NextResponse.json({ success: true, count: createdLeads.count, batchId: batch.id });
+    const seenPhones = new Set(existingLeads.map((l) => l.phoneNormalized));
+    const leadsToInsert = [];
+
+    for (const lead of rawLeadsToInsert) {
+      if (lead.phoneNormalized && !seenPhones.has(lead.phoneNormalized)) {
+        leadsToInsert.push(lead);
+        seenPhones.add(lead.phoneNormalized); // Prevent duplicates within the same file
+      } else if (!lead.phoneNormalized) {
+        // If there's no phone, we can't reliably deduplicate, so we just add it
+        leadsToInsert.push(lead);
+      }
+    }
+
+    let count = 0;
+    if (leadsToInsert.length > 0) {
+      // Bulk create
+      const createdLeads = await prisma.lead.createMany({
+        data: leadsToInsert,
+        skipDuplicates: true,
+      });
+      count = createdLeads.count;
+    }
+
+    return NextResponse.json({ success: true, count, batchId: batch.id });
   } catch (error: any) {
     console.error("Bulk Import Error:", error);
     return NextResponse.json({ error: error.message || "Failed to save leads" }, { status: 500 });
