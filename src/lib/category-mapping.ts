@@ -22,6 +22,14 @@ export const CATEGORY_MAPPINGS: Record<string, string[]> = {
     "Function room facility",
     "Wedding venue",
   ],
+  "Health & Fitness": [
+    "Gym",
+    "Fitness",
+    "Fitness center",
+    "Gymnasium",
+    "Yoga studio",
+    "Pilates studio",
+  ],
   "Health & Medical": [
     "Dental",
     "Diabetes Care",
